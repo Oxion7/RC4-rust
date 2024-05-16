@@ -1,4 +1,3 @@
-#![allow(non_snake_case)]
 use std::io::{self, Write};
 
 // RC4 structure to hold state
@@ -56,15 +55,18 @@ fn main() {
     io::stdout().flush().unwrap();
     let mut plaintext_input = String::new();
     io::stdin().read_line(&mut plaintext_input).expect("Failed to read line");
-    let plaintext = plaintext_input.trim().as_bytes();
+    let plaintext = plaintext_input.trim();
+
+    // Convert plaintext to bytes
+    let plaintext_bytes = plaintext.as_bytes();
 
     // Create RC4 instance for encryption
     let mut rc4_encrypt = RC4::new(key);
 
-    // Encrypt the plaintext in real-time
+    // Encrypt the plaintext and display ciphertext in real-time
     print!("Ciphertext (hex): ");
     io::stdout().flush().unwrap();
-    let ciphertext: Vec<u8> = plaintext.iter().map(|&byte| {
+    let ciphertext: Vec<u8> = plaintext_bytes.iter().map(|&byte| {
         let encrypted_byte = rc4_encrypt.process_byte(byte);
         print!("{:02x} ", encrypted_byte);
         io::stdout().flush().unwrap();
@@ -75,13 +77,20 @@ fn main() {
     // Create RC4 instance for decryption
     let mut rc4_decrypt = RC4::new(key);
 
-    // Decrypt the ciphertext in real-time
+    // Decrypt the ciphertext and display plaintext in real-time
     print!("Decrypted: ");
     io::stdout().flush().unwrap();
-    for &byte in &ciphertext {
+    let decrypted_bytes: Vec<u8> = ciphertext.iter().map(|&byte| {
         let decrypted_byte = rc4_decrypt.process_byte(byte);
         print!("{}", decrypted_byte as char);
         io::stdout().flush().unwrap();
-    }
+        decrypted_byte
+    }).collect();
     println!();
+
+    // Convert decrypted bytes back to string
+    match String::from_utf8(decrypted_bytes) {
+        Ok(decrypted_text) => println!("Decrypted text: {}", decrypted_text),
+        Err(_) => println!("Decryption failed: Invalid UTF-8 sequence"),
+    }
 }
