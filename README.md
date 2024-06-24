@@ -21,7 +21,7 @@ This repository contains an implementation of the RC4 stream cipher algorithm in
 1. **Clone the Repository**
 
     ```sh
-    git clone https://github.com/yourusername/rc4-rust.git
+    git clone https://github.com/Oxion7/rc4-rust.git
     cd rc4-rust
     ```
 
